@@ -117,62 +117,6 @@ elif status_filtro == "Todas":
 else:
     tarefas_filtradas = [t for t in tarefas if t["status"] == status_filtro]
 
-# --- Listagem de tarefas com cores avançadas ---
-st.subheader("📌 Tarefas Cadastradas")
-
-if not tarefas_filtradas:
-    st.info("Nenhuma tarefa encontrada para o filtro selecionado.")
-else:
-    for i, tarefa in enumerate(tarefas_filtradas):
-        # Definir cor de fundo baseado no status
-        if tarefa['status'] == "Pendente":
-            cor = "#FFFACD"
-        elif tarefa['status'] == "Em andamento":
-            cor = "#ADD8E6"
-        elif tarefa['status'] == "Encerrada":
-            cor = "#90EE90"
-        elif tarefas_atrasadas(tarefa):
-            cor = "#FF7F7F"  # vermelho para atrasadas
-
-        with st.container():
-            st.markdown(
-                f"<div style='background-color:{cor}; padding:10px; border-radius:8px'>"
-                f"**Técnico:** {tarefa['nome']}  📞 {tarefa['telefone']}<br>"
-                f"**Descrição:** {tarefa['descricao']}<br>"
-                f"**Status:** {tarefa['status']}<br>"
-                f"**Criada em:** {tarefa['data_criacao']}<br>"
-                f"{'**Assumida por:** ' + tarefa['assumido_por'] + ' em ' + tarefa['data_assumido'] if tarefa['assumido_por'] else ''}<br>"
-                f"{'**Encerrada por:** ' + tarefa['encerrado_por'] + ' em ' + tarefa['data_encerrado'] if tarefa['encerrado_por'] else ''}"
-                f"</div>",
-                unsafe_allow_html=True
-            )
-
-            col1, col2 = st.columns(2)
-            # Assumir
-            with col1:
-                if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
-                    if tarefa["status"] == "Pendente":
-                        tarefa["status"] = "Em andamento"
-                        tarefa["assumido_por"] = usuario_atual
-                        tarefa["data_assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                        salvar_tarefas(tarefas)
-                        st.toast("Tarefa assumida com sucesso!", icon="✅")
-                        st.experimental_rerun()
-                    else:
-                        st.warning("Tarefa já foi assumida ou encerrada.")
-
-            # Encerrar
-            with col2:
-                if st.button("✅ Encerrar", key=f"encerrar_{i}"):
-                    if tarefa["status"] != "Encerrada":
-                        tarefa["status"] = "Encerrada"
-                        tarefa["encerrado_por"] = usuario_atual
-                        tarefa["data_encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                        salvar_tarefas(tarefas)
-                        st.toast("Tarefa encerrada com sucesso!", icon="✅")
-                        st.experimental_rerun()
-                    else:
-                        st.warning("Tarefa já está encerrada.")
 
 # --- Botão Admin apagar todas ---
 if tipo_usuario == "admin":
@@ -194,33 +138,4 @@ if st.button("📄 Baixar todas as tarefas em Excel"):
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
-# --- Gráficos profissionais ---
-st.subheader("📊 Painel de Produtividade")
-
-if tarefas:
-    df = pd.DataFrame(tarefas)
-
-    # Status das tarefas
-    status_count = df['status'].value_counts().reset_index()
-    status_count.columns = ['Status', 'Quantidade']
-    fig_status = px.pie(status_count, names='Status', values='Quantidade', title='Distribuição por Status')
-    st.plotly_chart(fig_status, use_container_width=True)
-
-    # Tarefas encerradas por técnico
-    encerradas = df[df['status']=='Encerrada']
-    if not encerradas.empty:
-        encerradas_count = encerradas['encerrado_por'].value_counts().reset_index()
-        encerradas_count.columns = ['Técnico', 'Tarefas Encerradas']
-        fig_tecnico = px.bar(encerradas_count, x='Técnico', y='Tarefas Encerradas', 
-                             title='Tarefas encerradas por técnico', text='Tarefas Encerradas')
-        st.plotly_chart(fig_tecnico, use_container_width=True)
-
-    # Tarefas atrasadas por técnico
-    atrasadas = df[df.apply(tarefas_atrasadas, axis=1)]
-    if not atrasadas.empty:
-        atrasadas_count = atrasadas['nome'].value_counts().reset_index()
-        atrasadas_count.columns = ['Técnico', 'Tarefas Atrasadas']
-        fig_atrasadas = px.bar(atrasadas_count, x='Técnico', y='Tarefas Atrasadas',
-                               title='Tarefas atrasadas por técnico', text='Tarefas Atrasadas', color='Tarefas Atrasadas')
-        st.plotly_chart(fig_atrasadas, use_container_width=True)
 
