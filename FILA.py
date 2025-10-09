@@ -19,6 +19,8 @@ USUARIOS = [
     {"usuario": "Alberto Ferraz", "senha": "Analista", "tipo": "admin"},
     {"usuario": "Madson Reis", "senha": "Analista", "tipo": "admin"},
     {"usuario": "Silvana Terrivel", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Jessica Torres", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Gustavo Durão", "senha": "Analista", "tipo": "admin"},
 ]
 
 # --------------------------
@@ -111,7 +113,7 @@ with st.form("form_tarefa"):
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
-                "data_criacao": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "data_assumido": "",
                 "data_encerrado": ""
             }
@@ -149,7 +151,7 @@ else:
                 if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
                     if tarefa["status"] == "Pendente":
                         tarefa["status"] = "Em andamento"
-                        tarefa["data_assumido"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+                        tarefa["data_assumido"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
                         salvar_tarefas(tarefas)
                         st.success("✅ Tarefa assumida com sucesso!")
                         st.rerun()
@@ -159,7 +161,7 @@ else:
                 if st.button("✅ Encerrar", key=f"encerrar_{i}"):
                     if tarefa["status"] != "Encerrada":
                         tarefa["status"] = "Encerrada"
-                        tarefa["data_encerrado"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+                        tarefa["data_encerrado"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
                         salvar_tarefas(tarefas)
                         st.success("🏁 Tarefa encerrada com sucesso!")
                         st.rerun()
