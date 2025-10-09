@@ -77,3 +77,12 @@ def gerar_excel(tarefas):
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Tarefas")
     return output.getvalue()
+    
+if st.session_state.tarefas:
+    excel_bytes = gerar_excel(st.session_state.tarefas)
+    st.download_button(
+        label="📥 Baixar Excel",
+        data=excel_bytes,
+        file_name=f"tarefas_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
