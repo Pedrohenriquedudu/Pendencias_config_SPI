@@ -89,6 +89,7 @@ with st.form("form_tarefa"):
             salvar_tarefas(tarefas)
             st.success("✅ Tarefa adicionada!")
             st.experimental_rerun()
+            
         else:
             st.warning("Preencha todos os campos!")
 
