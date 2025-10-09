@@ -90,10 +90,6 @@ st.title("📋 Sistema de Tarefas")
 # Carrega as tarefas persistentes
 tarefas = carregar_tarefas()
 
-# Atualiza status de atraso
-for tarefa in tarefas:
-    tarefa["status"] = calcular_status(tarefa)
-salvar_tarefas(tarefas)
 
 # --------------------------
 # Adicionar nova tarefa
