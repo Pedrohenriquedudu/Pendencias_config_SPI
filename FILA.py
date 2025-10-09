@@ -14,7 +14,7 @@ USUARIOS_CSV = "usuarios.csv"
 
 # --- Sessão ---
 if "tarefas" not in st.session_state:
-    st.session_state.tarefas = carregar_tarefas()
+  st.session_state.tarefas = carregar_tarefas()
 
 if "usuario_logado" not in st.session_state:
     st.session_state.usuario_logado = None
