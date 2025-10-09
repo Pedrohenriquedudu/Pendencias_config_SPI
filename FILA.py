@@ -50,7 +50,7 @@ def calcular_status(tarefa):
     """Atualiza status para atrasada se o prazo passar"""
     if tarefa["status"] == "Encerrada":
         return "Encerrada"
-    data_criacao = datetime.strptime(tarefa["data_criacao"], "%d-%m-%Y %H:%M:%S", "usuario", )
+    data_criacao = datetime.strptime(tarefa["data_criacao"], "%d-%m-%Y %H:%M:%S", ["usuario"] )
     if datetime.now() - data_criacao > timedelta(days=PRAZO_PADRAO_DIAS):
         return "Atrasada"
     return tarefa["status"]
