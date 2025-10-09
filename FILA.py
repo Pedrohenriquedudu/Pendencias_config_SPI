@@ -11,7 +11,8 @@ ARQUIVO_CSV = "tarefas.csv"
 # --- Funções auxiliares ---
 def carregar_tarefas():
     if os.path.exists(ARQUIVO_CSV):
-    return pd.read_csv(ARQUIVO_CSV).to_dict(orient="records")
+        
+        return pd.read_csv(ARQUIVO_CSV).to_dict(orient="records")
     return []
 
 def salvar_tarefas(tarefas):
