@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
-import openpyxl 
+
 
 st.set_page_config(page_title="Gestão de Tarefas", layout="centered")
 
