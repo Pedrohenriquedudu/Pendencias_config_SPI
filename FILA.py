@@ -137,8 +137,8 @@ else:
     for i, tarefa in enumerate(tarefas):
         cor_emoji = {
             "Pendente": "🟡",
-            "Em andamento": "🔵","usuario",
-            "Encerrada": "🟢","usuario",
+            "Em andamento": "🔵",
+            "Encerrada": "🟢",
             "Atrasada": "🔴"
         }.get(tarefa["status"], "⚪")
 
