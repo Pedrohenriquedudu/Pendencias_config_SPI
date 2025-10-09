@@ -4,13 +4,45 @@ import os
 from datetime import datetime
 from io import BytesIO
 
-
 st.set_page_config(page_title="Gestão de Tarefas SPI", layout="wide")
 
 # --- Arquivos ---
 ARQUIVO_CSV = "tarefas.csv"
 USUARIOS_CSV = "usuarios.csv"
 
+# --- Funções auxiliares ---
+def carregar_tarefas():
+    if os.path.exists(ARQUIVO_CSV):
+        return pd.read_csv(ARQUIVO_CSV).to_dict(orient="records")
+    return []
+
+def salvar_tarefas(tarefas):
+    pd.DataFrame(tarefas).to_csv(ARQUIVO_CSV, index=False)
+
+def gerar_excel(tarefas):
+    df = pd.DataFrame(tarefas)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Tarefas")
+    return output.getvalue()
+
+def carregar_usuarios():
+    if os.path.exists(USUARIOS_CSV):
+        return pd.read_csv(USUARIOS_CSV).to_dict(orient="records")
+    else:
+        # Cria um admin padrão
+        df = pd.DataFrame([{"usuario": "operador", "senha": "Regional_spi", "tipo": "admin"}])
+        df.to_csv(USUARIOS_CSV, index=False)
+        return df.to_dict(orient="records")
+
+def salvar_usuarios(usuarios):
+    pd.DataFrame(usuarios).to_csv(USUARIOS_CSV, index=False)
+
+def validar_login(usuario, senha):
+    for u in carregar_usuarios():
+        if u["usuario"] == usuario and u["senha"] == senha:
+            return u
+    return None
 
 # --- Sessão ---
 if "tarefas" not in st.session_state:
@@ -107,6 +139,10 @@ with col2:
         df = pd.DataFrame(st.session_state.tarefas)
         status_count = df["status"].value_counts()
 
+        fig, ax = plt.subplots()
+        ax.bar(status_count.index, status_count.values, color=["orange", "deepskyblue", "lightgreen"])
+        ax.set_title("Distribuição por Status")
+        st.pyplot(fig)
 
         # Produtividade
         prod_df = df[df["assumido_por"] != ""]
