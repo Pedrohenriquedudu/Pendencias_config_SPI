@@ -1,50 +1,47 @@
 import streamlit as st
-import json
+import pandas as pd
 from datetime import datetime, timedelta
 import os
-import pandas as pd
-from io import BytesIO
 
 st.set_page_config(page_title="Sistema de Tarefas Profissional", layout="wide")
 
-ARQUIVO_TAREFAS = "tarefas.json"
+# --- Configuração ---
+ARQUIVO = "tarefas.csv"
+PRAZO_PADRAO_DIAS = 3
 
-# --- Usuários ---
+# --- Usuários cadastrados ---
 USUARIOS = [
     {"usuario": "admin", "senha": "1234", "tipo": "admin"},
     {"usuario": "tecnico1", "senha": "123", "tipo": "tecnico"},
-    {"usuario": "tecnico2", "senha": "123", "tipo": "tecnico"}
+    {"usuario": "tecnico2", "senha": "123", "tipo": "tecnico"},
 ]
 
-# --- Funções ---
+# --- Função de login ---
 def validar_login(usuario, senha):
     for u in USUARIOS:
         if u["usuario"] == usuario and u["senha"] == senha:
             return u
     return None
 
+# --- Carrega tarefas do CSV ---
 def carregar_tarefas():
-    if os.path.exists(ARQUIVO_TAREFAS):
-        with open(ARQUIVO_TAREFAS, "r") as f:
-            return json.load(f)
-    return []
+    if os.path.exists(ARQUIVO):
+        return pd.read_csv(ARQUIVO)
+    else:
+        return pd.DataFrame(columns=["nome", "telefone", "descricao", "status", "data_criacao", "data_assumido", "data_encerrado"])
 
-def salvar_tarefas(tarefas):
-    with open(ARQUIVO_TAREFAS, "w") as f:
-        json.dump(tarefas, f, indent=4)
+# --- Salva tarefas no CSV ---
+def salvar_tarefas(df):
+    df.to_csv(ARQUIVO, index=False)
 
-def gerar_excel(tarefas):
-    df = pd.DataFrame(tarefas)
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Tarefas")
-    return output.getvalue()
-
-def tarefas_atrasadas(tarefa, dias_limite=3):
-    data_criacao = datetime.strptime(tarefa['data_criacao'], "%d/%m/%Y %H:%M:%S")
-    if tarefa['status'] != "Encerrada" and datetime.now() - data_criacao > timedelta(days=dias_limite):
-        return True
-    return False
+# --- Verifica atraso ---
+def calcular_status_completo(row):
+    if row["status"] == "Encerrada":
+        return "Encerrada"
+    data_criacao = datetime.strptime(row["data_criacao"], "%Y-%m-%d %H:%M:%S")
+    if datetime.now() - data_criacao > timedelta(days=PRAZO_PADRAO_DIAS):
+        return "Atrasada"
+    return row["status"]
 
 # --- Sessão ---
 if "usuario_logado" not in st.session_state:
@@ -52,7 +49,7 @@ if "usuario_logado" not in st.session_state:
 
 # --- Login ---
 if not st.session_state.usuario_logado:
-    st.title("🔐 Login")
+    st.title("🔐 Login no Sistema de Tarefas")
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
     if st.button("Entrar"):
@@ -61,15 +58,15 @@ if not st.session_state.usuario_logado:
             st.session_state.usuario_logado = user
             st.success(f"✅ Bem-vindo, {usuario}!")
             st.experimental_rerun()
-    else:
+        else:
             st.error("Usuário ou senha incorretos.")
     st.stop()
 
-# --- Tela principal ---
+# --- Dados do usuário logado ---
 usuario_atual = st.session_state.usuario_logado["usuario"]
 tipo_usuario = st.session_state.usuario_logado["tipo"]
 
-st.sidebar.title(f"👋 Olá, {usuario_atual}")
+st.sidebar.title(f"👋 {usuario_atual}")
 if st.sidebar.button("Sair"):
     st.session_state.usuario_logado = None
     st.experimental_rerun()
@@ -77,67 +74,104 @@ if st.sidebar.button("Sair"):
 st.title("📋 Sistema de Tarefas Profissional")
 
 # --- Carregar tarefas ---
-tarefas = carregar_tarefas()
+tarefas_df = carregar_tarefas()
 
-# --- Formulário nova tarefa ---
-st.subheader("➕ Adicionar Nova Tarefa")
+# --- Adicionar tarefa ---
+st.subheader("➕ Nova Tarefa")
 with st.form("form_tarefa"):
     nome = st.text_input("Nome do técnico")
     telefone = st.text_input("Telefone")
     descricao = st.text_area("Descrição da tarefa")
-    submitted = st.form_submit_button("Adicionar tarefa")
-    
-    if submitted:
+    if st.form_submit_button("Adicionar tarefa"):
         if nome and telefone and descricao:
-            tarefa = {
+            nova = pd.DataFrame([{
                 "nome": nome,
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
-                "data_criacao": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                "assumido_por": "",
+                "data_criacao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "data_assumido": "",
-                "encerrado_por": "",
                 "data_encerrado": ""
-            }
-            tarefas.append(tarefa)
-            salvar_tarefas(tarefas)
+            }])
+            tarefas_df = pd.concat([tarefas_df, nova], ignore_index=True)
+            salvar_tarefas(tarefas_df)
             st.success("✅ Tarefa adicionada!")
-            st.experimental_rerun()
-            
         else:
-            st.warning("Preencha todos os campos!")
+            st.warning("Preencha todos os campos.")
 
+# --- Atualizar status (atrasadas) ---
+tarefas_df["status"] = tarefas_df.apply(calcular_status_completo, axis=1)
+salvar_tarefas(tarefas_df)
 
+# --- Exibir tarefas ---
+st.subheader("📌 Lista de Tarefas")
 
-# --- Filtro por status ---
-status_filtro = st.selectbox("Filtrar tarefas por status:", ["Todas", "Pendente", "Em andamento", "Encerrada", "Atrasadas"])
-if status_filtro == "Atrasadas":
-    tarefas_filtradas = [t for t in tarefas if tarefas_atrasadas(t)]
-elif status_filtro == "Todas":
-    tarefas_filtradas = tarefas
+if tarefas_df.empty:
+    st.info("Nenhuma tarefa cadastrada.")
 else:
-    tarefas_filtradas = [t for t in tarefas if t["status"] == status_filtro]
+    for i, row in tarefas_df.iterrows():
+        cor = {
+            "Pendente": "⚠️",
+            "Em andamento": "🔵",
+            "Encerrada": "✅",
+            "Atrasada": "🔴"
+        }.get(row["status"], "📝")
 
+        st.markdown(f"### {cor} {row['descricao']}")
+        st.write(f"👨‍🔧 Técnico: {row['nome']} | 📞 {row['telefone']}")
+        st.write(f"📅 Criada em: {row['data_criacao']}")
+        st.write(f"📍 Status: **{row['status']}**")
 
-# --- Botão Admin apagar todas ---
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
+                if row["status"] == "Pendente":
+                    tarefas_df.at[i, "status"] = "Em andamento"
+                    tarefas_df.at[i, "data_assumido"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    salvar_tarefas(tarefas_df)
+                    st.toast("🧑‍🔧 Tarefa assumida!")
+                    st.experimental_rerun()
+                else:
+                    st.warning("Tarefa já assumida ou encerrada.")
+        with col2:
+            if st.button("✅ Encerrar", key=f"encerrar_{i}"):
+                if row["status"] != "Encerrada":
+                    tarefas_df.at[i, "status"] = "Encerrada"
+                    tarefas_df.at[i, "data_encerrado"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    salvar_tarefas(tarefas_df)
+                    st.toast("✅ Tarefa encerrada!")
+                    st.experimental_rerun()
+                else:
+                    st.warning("Tarefa já está encerrada.")
+
+# --- Apagar todas (somente admin) ---
 if tipo_usuario == "admin":
     st.divider()
     if st.button("🗑️ Apagar todas as tarefas"):
-        tarefas = []
-        salvar_tarefas(tarefas)
+        tarefas_df = tarefas_df.iloc[0:0]
+        salvar_tarefas(tarefas_df)
         st.warning("Todas as tarefas foram apagadas pelo Admin!")
         st.experimental_rerun()
 
-# --- Botão download Excel ---
-st.subheader("📥 Relatórios e Exportação")
-if st.button("📄 Baixar todas as tarefas em Excel"):
-    excel_bytes = gerar_excel(tarefas)
-    st.download_button(
-        label="Download Excel",
-        data=excel_bytes,
-        file_name=f"tarefas_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+# --- Relatório semanal ---
+st.divider()
+st.subheader("📊 Relatório Semanal por Técnico")
 
+if not tarefas_df.empty:
+    tarefas_df["data_criacao"] = pd.to_datetime(tarefas_df["data_criacao"], errors="coerce")
+    semana_atual = datetime.now().isocalendar()[1]
+    relatorio = tarefas_df[tarefas_df["data_criacao"].dt.isocalendar().week == semana_atual]
+    relatorio = relatorio[relatorio["status"] == "Encerrada"]
+    resumo = relatorio.groupby("nome").size().reset_index(name="Tarefas Encerradas")
+    st.dataframe(resumo)
 
+    # Download Excel
+    if not resumo.empty:
+        resumo.to_excel("relatorio_semana.xlsx", index=False)
+        with open("relatorio_semana.xlsx", "rb") as f:
+            st.download_button(
+                label="📥 Baixar relatório em Excel",
+                data=f,
+                file_name="relatorio_semana.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
