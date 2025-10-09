@@ -33,7 +33,7 @@ if not st.session_state.usuario_logado:
         if user:
             st.session_state.usuario_logado = user
             st.success(f"✅ Bem-vindo, {usuario}!")
-            st.experimental_rerun()
+            
         else:
             st.error("Usuário ou senha incorretos.")
     st.stop()
