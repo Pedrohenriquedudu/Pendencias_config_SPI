@@ -66,7 +66,13 @@ for i, tarefa in enumerate(st.session_state.tarefas):
 
 # --- Gerar Excel ---
 def gerar_excel(tarefas):
-    df = pd.DataFrame(tarefas)
+    # Converte todos os valores para string para evitar erros
+    tarefas_str = []
+    for t in tarefas:
+        tarefas_str.append({k: str(v) for k, v in t.items()})
+
+    df = pd.DataFrame(tarefas_str)
+
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Tarefas")
