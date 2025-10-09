@@ -105,7 +105,8 @@ with st.form("form_tarefa"):
             st.success("✅ Tarefa adicionada!")
             st.experimental_rerun()
             
-        else:
+            
+            else:
             st.warning("Preencha todos os campos!")
 
 # --- Filtro por status ---
