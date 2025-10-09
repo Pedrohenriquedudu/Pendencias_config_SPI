@@ -11,7 +11,7 @@ ARQUIVO_CSV = "tarefas.csv"
 # --- Funções auxiliares ---
 def carregar_tarefas():
     if os.path.exists(ARQUIVO_CSV):
-        return pd.read_csv(ARQUIVO_CSV).to_dict(orient="records")
+    return pd.read_csv(ARQUIVO_CSV).to_dict(orient="records")
     return []
 
 def salvar_tarefas(tarefas):
@@ -28,7 +28,7 @@ def gerar_excel(tarefas):
 
 # --- Inicializar tarefas ---
 if "tarefas" not in st.session_state:
-    st.session_state.tarefas = carregar_tarefas()
+st.session_state.tarefas = carregar_tarefas()
 
 st.title("📋 Sistema de Gestão de Tarefas")
 
