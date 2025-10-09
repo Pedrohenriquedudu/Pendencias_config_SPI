@@ -79,7 +79,7 @@ if st.sidebar.button("Sair"):
     st.experimental_rerun()
 
 # --- Página principal ---
-st.title("📋 Gestão de Tarefas")
+st.title("📋 Gestão de Fila Config SPI")
 
 # --- Opção Admin: Cadastrar novo usuário ---
 if tipo_usuario == "admin":
