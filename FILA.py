@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
-from io import BytesIO
 
-st.set_page_config(page_title="Gestão de Fila Config SPI", layout="centered")
+st.set_page_config(page_title="Gestão de Tarefas", layout="centered")
 
 ARQUIVO_CSV = "tarefas.csv"
 
@@ -17,14 +16,6 @@ def carregar_tarefas():
 def salvar_tarefas(tarefas):
     df = pd.DataFrame(tarefas)
     df.to_csv(ARQUIVO_CSV, index=False)
-
-def gerar_excel(tarefas):
-    """Gera arquivo Excel com todas as tarefas."""
-    df = pd.DataFrame(tarefas)
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Tarefas")
-    return output.getvalue()
 
 # --- Inicializar tarefas ---
 if "tarefas" not in st.session_state:
@@ -91,7 +82,7 @@ else:
 
             col1, col2, col3 = st.columns(3)
 
-            # --- Assumir ---
+            # --- Botão para assumir ---
             with col1:
                 if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}_{tarefa['descricao']}"):
                     if tarefa["status"] == "Encerrada":
@@ -112,7 +103,7 @@ else:
                             st.success(f"Tarefa assumida por {tecnico}")
                             st.experimental_rerun()
 
-            # --- Encerrar ---
+            # --- Botão para encerrar ---
             with col2:
                 if st.button("✅ Encerrar", key=f"encerrar_{i}_{tarefa['descricao']}"):
                     if tarefa["status"] == "Encerrada":
@@ -131,7 +122,7 @@ else:
                             st.success(f"Tarefa encerrada por {tecnico_encerrar}")
                             st.experimental_rerun()
 
-            # --- Editar ---
+            # --- Botão para editar ---
             with col3:
                 if st.button("✏️ Editar", key=f"editar_{i}_{tarefa['descricao']}"):
                     with st.expander(f"Editar Tarefa {i+1}"):
@@ -147,19 +138,10 @@ else:
                             st.success("Tarefa atualizada com sucesso!")
                             st.experimental_rerun()
 
-# --- Exportar para Excel ---
-st.divider()
-if len(st.session_state.tarefas) > 0:
-    excel_bytes = gerar_excel(st.session_state.tarefas)
-    st.download_button(
-        label="📥 Baixar relatório Excel",
-        data=excel_bytes,
-        file_name=f"relatorio_tarefas_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-
 # --- Botão para limpar todas as tarefas ---
+st.divider()
 if st.button("🗑️ Limpar todas as tarefas"):
     st.session_state.tarefas = []
     salvar_tarefas([])
     st.warning("Todas as tarefas foram removidas.")
+
