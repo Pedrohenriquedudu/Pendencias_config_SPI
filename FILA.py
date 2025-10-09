@@ -103,6 +103,7 @@ st.subheader("➕ Adicionar Nova Tarefa")
 with st.form("form_tarefa"):
     nome = st.text_input("Nome do técnico responsável")
     telefone = st.text_input("Telefone do técnico")
+    id = st.text_input("id vantive")
     descricao = st.text_area("Descrição da tarefa")
     enviar = st.form_submit_button("Adicionar Tarefa")
 
@@ -111,6 +112,7 @@ with st.form("form_tarefa"):
             nova_tarefa = {
                 "nome": nome,
                 "telefone": telefone,
+                "id": id,
                 "descricao": descricao,
                 "status": "Pendente",
                 "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
@@ -135,14 +137,15 @@ else:
     for i, tarefa in enumerate(tarefas):
         cor_emoji = {
             "Pendente": "🟡",
-            "Em andamento": "🔵",
-            "Encerrada": "🟢",
+            "Em andamento": "🔵","usuario",
+            "Encerrada": "🟢","usuario",
             "Atrasada": "🔴"
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
+            st.write(f"    id: {tarefa['id']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
             st.write(f"📍 Status atual: **{tarefa['status']}**")
 
