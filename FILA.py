@@ -102,7 +102,7 @@ tarefas = carregar_tarefas()
 st.subheader("➕ Adicionar Nova Tarefa")
 with st.form("form_tarefa"):
     nome = st.text_input("Nome do técnico responsável")
-    Id_vantive = st.text_input("Id_vantive")
+    ID_vantive = st.text_input("ID_vantive")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
     enviar = st.form_submit_button("Adicionar Tarefa")
@@ -111,7 +111,7 @@ with st.form("form_tarefa"):
         if nome and telefone and descricao:
             nova_tarefa = {
                 "nome": nome,
-                "ID_vantive": Id_vantive,
+                "ID_vantive": ID_vantive,
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
