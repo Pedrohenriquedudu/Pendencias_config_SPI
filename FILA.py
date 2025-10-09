@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 from io import BytesIO
-import matplotlib.pyplot as plt
+
 
 st.set_page_config(page_title="Gestão de Tarefas SPI", layout="wide")
 
@@ -139,11 +139,6 @@ with col2:
     if len(st.session_state.tarefas) > 0:
         df = pd.DataFrame(st.session_state.tarefas)
         status_count = df["status"].value_counts()
-
-        fig, ax = plt.subplots()
-        ax.bar(status_count.index, status_count.values, color=["orange", "deepskyblue", "lightgreen"])
-        ax.set_title("Distribuição por Status")
-        st.pyplot(fig)
 
         # Produtividade
         prod_df = df[df["assumido_por"] != ""]
