@@ -1,9 +1,12 @@
 import streamlit as st
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
+import pandas as pd
+import plotly.express as px
+from io import BytesIO
 
-st.set_page_config(page_title="Sistema de Tarefas Online", layout="wide")
+st.set_page_config(page_title="Sistema de Tarefas Profissional", layout="wide")
 
 ARQUIVO_TAREFAS = "tarefas.json"
 
@@ -14,13 +17,13 @@ USUARIOS = [
     {"usuario": "tecnico2", "senha": "123", "tipo": "tecnico"}
 ]
 
+# --- Funções ---
 def validar_login(usuario, senha):
     for u in USUARIOS:
         if u["usuario"] == usuario and u["senha"] == senha:
             return u
     return None
 
-# --- Funções para tarefas ---
 def carregar_tarefas():
     if os.path.exists(ARQUIVO_TAREFAS):
         with open(ARQUIVO_TAREFAS, "r") as f:
@@ -30,6 +33,19 @@ def carregar_tarefas():
 def salvar_tarefas(tarefas):
     with open(ARQUIVO_TAREFAS, "w") as f:
         json.dump(tarefas, f, indent=4)
+
+def gerar_excel(tarefas):
+    df = pd.DataFrame(tarefas)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Tarefas")
+    return output.getvalue()
+
+def tarefas_atrasadas(tarefa, dias_limite=3):
+    data_criacao = datetime.strptime(tarefa['data_criacao'], "%d/%m/%Y %H:%M:%S")
+    if tarefa['status'] != "Encerrada" and datetime.now() - data_criacao > timedelta(days=dias_limite):
+        return True
+    return False
 
 # --- Sessão ---
 if "usuario_logado" not in st.session_state:
@@ -59,7 +75,7 @@ if st.sidebar.button("Sair"):
     st.session_state.usuario_logado = None
     st.experimental_rerun()
 
-st.title("📋 Sistema de Tarefas Online")
+st.title("📋 Sistema de Tarefas Profissional")
 
 # --- Carregar tarefas ---
 tarefas = carregar_tarefas()
@@ -88,59 +104,75 @@ with st.form("form_tarefa"):
             tarefas.append(tarefa)
             salvar_tarefas(tarefas)
             st.success("✅ Tarefa adicionada!")
-            st.experimental_rerun()            
+            st.experimental_rerun()
         else:
             st.warning("Preencha todos os campos!")
 
 # --- Filtro por status ---
-status_filtro = st.selectbox("Filtrar tarefas por status:", ["Todas", "Pendente", "Em andamento", "Encerrada"])
-tarefas_filtradas = tarefas if status_filtro == "Todas" else [t for t in tarefas if t["status"] == status_filtro]
+status_filtro = st.selectbox("Filtrar tarefas por status:", ["Todas", "Pendente", "Em andamento", "Encerrada", "Atrasadas"])
+if status_filtro == "Atrasadas":
+    tarefas_filtradas = [t for t in tarefas if tarefas_atrasadas(t)]
+elif status_filtro == "Todas":
+    tarefas_filtradas = tarefas
+else:
+    tarefas_filtradas = [t for t in tarefas if t["status"] == status_filtro]
 
-# --- Listagem de tarefas ---
+# --- Listagem de tarefas com cores avançadas ---
 st.subheader("📌 Tarefas Cadastradas")
 
 if not tarefas_filtradas:
     st.info("Nenhuma tarefa encontrada para o filtro selecionado.")
 else:
     for i, tarefa in enumerate(tarefas_filtradas):
-        st.markdown(f"**Técnico:** {tarefa['nome']}  📞 {tarefa['telefone']}")
-        st.markdown(f"**Descrição:** {tarefa['descricao']}")
-        st.markdown(f"**Status:** {tarefa['status']}")
-        st.markdown(f"**Criada em:** {tarefa['data_criacao']}")
-        if tarefa["assumido_por"]:
-            st.markdown(f"**Assumida por:** {tarefa['assumido_por']} em {tarefa['data_assumido']}")
-        if tarefa["encerrado_por"]:
-            st.markdown(f"**Encerrada por:** {tarefa['encerrado_por']} em {tarefa['data_encerrado']}")
+        # Definir cor de fundo baseado no status
+        if tarefa['status'] == "Pendente":
+            cor = "#FFFACD"
+        elif tarefa['status'] == "Em andamento":
+            cor = "#ADD8E6"
+        elif tarefa['status'] == "Encerrada":
+            cor = "#90EE90"
+        elif tarefas_atrasadas(tarefa):
+            cor = "#FF7F7F"  # vermelho para atrasadas
 
-        col1, col2 = st.columns(2)
+        with st.container():
+            st.markdown(
+                f"<div style='background-color:{cor}; padding:10px; border-radius:8px'>"
+                f"**Técnico:** {tarefa['nome']}  📞 {tarefa['telefone']}<br>"
+                f"**Descrição:** {tarefa['descricao']}<br>"
+                f"**Status:** {tarefa['status']}<br>"
+                f"**Criada em:** {tarefa['data_criacao']}<br>"
+                f"{'**Assumida por:** ' + tarefa['assumido_por'] + ' em ' + tarefa['data_assumido'] if tarefa['assumido_por'] else ''}<br>"
+                f"{'**Encerrada por:** ' + tarefa['encerrado_por'] + ' em ' + tarefa['data_encerrado'] if tarefa['encerrado_por'] else ''}"
+                f"</div>",
+                unsafe_allow_html=True
+            )
 
-        # Botão Assumir
-        with col1:
-            if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
-                if tarefa["status"] == "Pendente":
-                    tarefa["status"] = "Em andamento"
-                    tarefa["assumido_por"] = usuario_atual
-                    tarefa["data_assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                    salvar_tarefas(tarefas)
-                    st.success("Tarefa assumida!")
-                    st.experimental_rerun()
-                    
-                else:
-                    st.warning("Tarefa já foi assumida ou encerrada.")
+            col1, col2 = st.columns(2)
+            # Assumir
+            with col1:
+                if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
+                    if tarefa["status"] == "Pendente":
+                        tarefa["status"] = "Em andamento"
+                        tarefa["assumido_por"] = usuario_atual
+                        tarefa["data_assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                        salvar_tarefas(tarefas)
+                        st.toast("Tarefa assumida com sucesso!", icon="✅")
+                        st.experimental_rerun()
+                    else:
+                        st.warning("Tarefa já foi assumida ou encerrada.")
 
-        # Botão Encerrar
-        with col2:
-            if st.button("✅ Encerrar", key=f"encerrar_{i}"):
-                if tarefa["status"] != "Encerrada":
-                    tarefa["status"] = "Encerrada"
-                    tarefa["encerrado_por"] = usuario_atual
-                    tarefa["data_encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                    salvar_tarefas(tarefas)
-                    st.success("Tarefa encerrada!")
-                    st.experimental_rerun()
-                    
-                else:
-                    st.warning("Tarefa já está encerrada.")
+            # Encerrar
+            with col2:
+                if st.button("✅ Encerrar", key=f"encerrar_{i}"):
+                    if tarefa["status"] != "Encerrada":
+                        tarefa["status"] = "Encerrada"
+                        tarefa["encerrado_por"] = usuario_atual
+                        tarefa["data_encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                        salvar_tarefas(tarefas)
+                        st.toast("Tarefa encerrada com sucesso!", icon="✅")
+                        st.experimental_rerun()
+                    else:
+                        st.warning("Tarefa já está encerrada.")
 
 # --- Botão Admin apagar todas ---
 if tipo_usuario == "admin":
@@ -150,4 +182,45 @@ if tipo_usuario == "admin":
         salvar_tarefas(tarefas)
         st.warning("Todas as tarefas foram apagadas pelo Admin!")
         st.experimental_rerun()
+
+# --- Botão download Excel ---
+st.subheader("📥 Relatórios e Exportação")
+if st.button("📄 Baixar todas as tarefas em Excel"):
+    excel_bytes = gerar_excel(tarefas)
+    st.download_button(
+        label="Download Excel",
+        data=excel_bytes,
+        file_name=f"tarefas_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+# --- Gráficos profissionais ---
+st.subheader("📊 Painel de Produtividade")
+
+if tarefas:
+    df = pd.DataFrame(tarefas)
+
+    # Status das tarefas
+    status_count = df['status'].value_counts().reset_index()
+    status_count.columns = ['Status', 'Quantidade']
+    fig_status = px.pie(status_count, names='Status', values='Quantidade', title='Distribuição por Status')
+    st.plotly_chart(fig_status, use_container_width=True)
+
+    # Tarefas encerradas por técnico
+    encerradas = df[df['status']=='Encerrada']
+    if not encerradas.empty:
+        encerradas_count = encerradas['encerrado_por'].value_counts().reset_index()
+        encerradas_count.columns = ['Técnico', 'Tarefas Encerradas']
+        fig_tecnico = px.bar(encerradas_count, x='Técnico', y='Tarefas Encerradas', 
+                             title='Tarefas encerradas por técnico', text='Tarefas Encerradas')
+        st.plotly_chart(fig_tecnico, use_container_width=True)
+
+    # Tarefas atrasadas por técnico
+    atrasadas = df[df.apply(tarefas_atrasadas, axis=1)]
+    if not atrasadas.empty:
+        atrasadas_count = atrasadas['nome'].value_counts().reset_index()
+        atrasadas_count.columns = ['Técnico', 'Tarefas Atrasadas']
+        fig_atrasadas = px.bar(atrasadas_count, x='Técnico', y='Tarefas Atrasadas',
+                               title='Tarefas atrasadas por técnico', text='Tarefas Atrasadas', color='Tarefas Atrasadas')
+        st.plotly_chart(fig_atrasadas, use_container_width=True)
 
