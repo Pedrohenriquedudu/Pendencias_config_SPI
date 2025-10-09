@@ -1,11 +1,13 @@
 import streamlit as st
+import pandas as pd
 from datetime import datetime
+from io import BytesIO
 
 # Inicializa a lista de tarefas
 if "tarefas" not in st.session_state:
     st.session_state.tarefas = []
 
-st.title("📋 Sistema de Tarefas")
+st.title("📋 Sistema de Tarefas com Excel")
 
 # --- Formulário para adicionar tarefa ---
 st.subheader("➕ Adicionar Nova Tarefa")
@@ -18,13 +20,13 @@ with st.form("form_tarefa"):
     if submitted:
         if nome and telefone and descricao:
             tarefa = {
-                "nome": nome,
-                "telefone": telefone,
-                "descricao": descricao,
-                "status": "Pendente",
-                "data_criacao": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                "data_assumido": "",
-                "data_encerrado": ""
+                "Nome": nome,
+                "Telefone": telefone,
+                "Descrição": descricao,
+                "Status": "Pendente",
+                "Data de Criação": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                "Data de Assumido": "",
+                "Data de Encerrado": ""
             }
             st.session_state.tarefas.append(tarefa)
             st.success("✅ Tarefa adicionada!")
@@ -35,19 +37,19 @@ with st.form("form_tarefa"):
 st.subheader("📌 Tarefas Cadastradas")
 
 for i, tarefa in enumerate(st.session_state.tarefas):
-    st.markdown(f"**Técnico:** {tarefa['nome']}  📞 {tarefa['telefone']}")
-    st.markdown(f"**Descrição:** {tarefa['descricao']}")
-    st.markdown(f"**Status:** {tarefa['status']}")
-    st.markdown(f"**Data de criação:** {tarefa['data_criacao']}")
+    st.markdown(f"**Técnico:** {tarefa['Nome']}  📞 {tarefa['Telefone']}")
+    st.markdown(f"**Descrição:** {tarefa['Descrição']}")
+    st.markdown(f"**Status:** {tarefa['Status']}")
+    st.markdown(f"**Data de Criação:** {tarefa['Data de Criação']}")
     
     col1, col2 = st.columns(2)
 
     # Botão para assumir a tarefa
     with col1:
         if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
-            if tarefa["status"] == "Pendente":
-                tarefa["status"] = "Em andamento"
-                tarefa["data_assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            if tarefa["Status"] == "Pendente":
+                tarefa["Status"] = "Em andamento"
+                tarefa["Data de Assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 st.success("Tarefa assumida!")
             else:
                 st.warning("Tarefa já foi assumida ou encerrada.")
@@ -55,9 +57,27 @@ for i, tarefa in enumerate(st.session_state.tarefas):
     # Botão para encerrar a tarefa
     with col2:
         if st.button("✅ Encerrar", key=f"encerrar_{i}"):
-            if tarefa["status"] != "Encerrada":
-                tarefa["status"] = "Encerrada"
-                tarefa["data_encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            if tarefa["Status"] != "Encerrada":
+                tarefa["Status"] = "Encerrada"
+                tarefa["Data de Encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 st.success("Tarefa encerrada!")
             else:
                 st.warning("Tarefa já está encerrada.")
+
+# --- Gerar Excel ---
+def gerar_excel(tarefas):
+    df = pd.DataFrame(tarefas)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Tarefas")
+    return output.getvalue()
+
+if st.session_state.tarefas:
+    excel_bytes = gerar_excel(st.session_state.tarefas)
+    st.download_button(
+        label="📥 Baixar Excel",
+        data=excel_bytes,
+        file_name=f"tarefas_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
