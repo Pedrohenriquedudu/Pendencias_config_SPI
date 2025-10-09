@@ -102,7 +102,7 @@ tarefas = carregar_tarefas()
 st.subheader("➕ Adicionar Nova Tarefa")
 with st.form("form_tarefa"):
     nome = st.text_input("Nome do técnico responsável")
-    ID_vantive = st.text_area("ID_vantive")
+    ID_vantive = st.text_input ("ID_vantive")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
     enviar = st.form_submit_button("Adicionar Tarefa")
@@ -144,7 +144,7 @@ else:
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
-            st.write(f"➕ ID_vantive: {tarefa['ID_vantive']}")
+            st.write(f"➕ ID_vantive: {tarefa['ID']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
             st.write(f"📍 Status atual: **{tarefa['status']}**")
