@@ -53,7 +53,7 @@ if "usuario_logado" not in st.session_state:
 
 # --- Tela de Login ---
 if not st.session_state.usuario_logado:
-    st.title("🔐 Sistema de Gestão de Tarefas - Login")
+    st.title("🔐 Sistema de Gestão de Tarefas")
 
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
