@@ -104,9 +104,10 @@ with st.form("form_tarefa"):
             salvar_tarefas(tarefas)
             st.success("✅ Tarefa adicionada!")
             st.experimental_rerun()
-            
-                else:
-                    st.warning("Preencha todos os campos!")
+        else:
+            st.warning("Preencha todos os campos!")
+
+
 
 # --- Filtro por status ---
 status_filtro = st.selectbox("Filtrar tarefas por status:", ["Todas", "Pendente", "Em andamento", "Encerrada", "Atrasadas"])
