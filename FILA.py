@@ -46,28 +46,18 @@ with st.form("nova_tarefa"):
             }
             st.session_state.tarefas.append(nova_tarefa)
             salvar_tarefas(st.session_state.tarefas)
-            st.success("✅ Tarefa adicionada com sucesso!")
+            st.success("Tarefa adicionada com sucesso!")
         else:
-            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
+            st.warning("Preencha todos os campos antes de adicionar.")
 
-# --- Filtro de visualização ---
+# --- Exibir tarefas cadastradas ---
 st.divider()
 st.subheader("📌 Tarefas Cadastradas")
 
-opcoes_status = ["Todas", "Pendente", "Em andamento", "Encerrada"]
-filtro = st.selectbox("Filtrar por status:", opcoes_status)
-
-# --- Filtrar tarefas ---
-if filtro != "Todas":
-    tarefas_filtradas = [t for t in st.session_state.tarefas if t["status"] == filtro]
+if len(st.session_state.tarefas) == 0:
+    st.info("Nenhuma tarefa cadastrada ainda.")
 else:
-    tarefas_filtradas = st.session_state.tarefas
-
-# --- Exibir tarefas ---
-if len(tarefas_filtradas) == 0:
-    st.info("Nenhuma tarefa encontrada para este filtro.")
-else:
-    for i, tarefa in enumerate(tarefas_filtradas):
+    for i, tarefa in enumerate(st.session_state.tarefas):
         with st.container(border=True):
             st.write(f"**Criada por:** {tarefa['nome_criador']}  📞 {tarefa['telefone']}")
             st.write(f"**Descrição:** {tarefa['descricao']}")
@@ -82,7 +72,7 @@ else:
             col1, col2 = st.columns(2)
 
             with col1:
-                if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}_{tarefa['descricao']}"):
+                if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
                     if tarefa["status"] == "Encerrada":
                         st.warning("Esta tarefa já foi encerrada.")
                     elif tarefa["status"] == "Em andamento":
@@ -93,15 +83,15 @@ else:
                             key=f"input_assumir_{i}"
                         )
                         if tecnico:
-                            tarefa["status"] = "Em andamento"
-                            tarefa["assumido_por"] = tecnico
-                            tarefa["data_assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                            st.session_state.tarefas[i]["status"] = "Em andamento"
+                            st.session_state.tarefas[i]["assumido_por"] = tecnico
+                            st.session_state.tarefas[i]["data_assumido"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                             salvar_tarefas(st.session_state.tarefas)
                             st.success(f"Tarefa assumida por {tecnico}")
                             st.experimental_rerun()
 
             with col2:
-                if st.button("✅ Encerrar", key=f"encerrar_{i}_{tarefa['descricao']}"):
+                if st.button("✅ Encerrar", key=f"encerrar_{i}"):
                     if tarefa["status"] == "Encerrada":
                         st.info("Esta tarefa já foi encerrada.")
                     else:
@@ -110,16 +100,17 @@ else:
                             key=f"input_encerrar_{i}"
                         )
                         if tecnico_encerrar:
-                            tarefa["status"] = "Encerrada"
-                            tarefa["encerrado_por"] = tecnico_encerrar
-                            tarefa["data_encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                            st.session_state.tarefas[i]["status"] = "Encerrada"
+                            st.session_state.tarefas[i]["encerrado_por"] = tecnico_encerrar
+                            st.session_state.tarefas[i]["data_encerrado"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                             salvar_tarefas(st.session_state.tarefas)
                             st.success(f"Tarefa encerrada por {tecnico_encerrar}")
                             st.experimental_rerun()
 
-# --- Botão para limpar todas as tarefas ---
+# --- Botão opcional para limpar todas as tarefas ---
 st.divider()
 if st.button("🗑️ Limpar todas as tarefas"):
     st.session_state.tarefas = []
     salvar_tarefas([])
     st.warning("Todas as tarefas foram removidas.")
+
