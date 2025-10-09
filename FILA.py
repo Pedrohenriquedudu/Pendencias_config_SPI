@@ -163,3 +163,4 @@ if st.button("🗑️ Limpar todas as tarefas"):
     st.session_state.tarefas = []
     salvar_tarefas([])
     st.warning("Todas as tarefas foram removidas.")
+
