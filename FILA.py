@@ -29,7 +29,7 @@ def gerar_excel(tarefas):
 
 # --- Inicializar tarefas ---
 if "tarefas" not in st.session_state:
-st.session_state.tarefas = carregar_tarefas()
+    st.session_state.tarefas = carregar_tarefas()
 
 st.title("📋 Sistema de Gestão de Tarefas")
 
