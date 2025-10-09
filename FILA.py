@@ -144,7 +144,7 @@ else:
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
-            st.write(f"👨‍🔧 ID_vantive: {tarefa['Id_vantive']}")
+            st.write(f"👨‍🔧 ID_vantive: {tarefa['ID_vantive']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
             st.write(f"📍 Status atual: **{tarefa['status']}**")
