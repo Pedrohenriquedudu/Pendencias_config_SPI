@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 from io import BytesIO
-import openpyxl
+
 
 st.set_page_config(page_title="Gestão de Tarefas SPI", layout="wide")
 
