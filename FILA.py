@@ -139,6 +139,7 @@ else:
                     salvar_tarefas(tarefas)
                     st.success("Tarefa encerrada!")
                     st.experimental_rerun()
+                    
                 else:
                     st.warning("Tarefa já está encerrada.")
 
