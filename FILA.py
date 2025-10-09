@@ -3,7 +3,6 @@ import json
 from datetime import datetime, timedelta
 import os
 import pandas as pd
-import plotly.express as px
 from io import BytesIO
 
 st.set_page_config(page_title="Sistema de Tarefas Profissional", layout="wide")
