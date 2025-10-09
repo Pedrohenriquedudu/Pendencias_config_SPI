@@ -108,7 +108,7 @@ col1, col2 = st.columns([2, 1])
 with col1:
     with st.form("nova_tarefa"):
         st.subheader("➕ Nova Tarefa")
-        nome = st.text_input("Nome do técnico responsável pela criação")
+        nome = st.text_input("Nome do técnico na Atividade")
         telefone = st.text_input("Telefone")
         descricao = st.text_area("Descrição da tarefa")
         submitted = st.form_submit_button("Adicionar")
