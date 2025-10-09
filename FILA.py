@@ -125,6 +125,7 @@ else:
                     salvar_tarefas(tarefas)
                     st.success("Tarefa assumida!")
                     st.experimental_rerun()
+                    
                 else:
                     st.warning("Tarefa já foi assumida ou encerrada.")
 
