@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import json
 import os
 
-st.set_page_config(page_title="Sistema de Tarefas", layout="wide")
+st.set_page_config(page_title="Sistema de Tarefas B2B SPI", layout="wide")
 
 # --------------------------
 # Configuração
@@ -13,9 +13,12 @@ ARQUIVO_TAREFAS = "tarefas.json"
 PRAZO_PADRAO_DIAS = 3
 
 USUARIOS = [
-    {"usuario": "admin", "senha": "1234", "tipo": "admin"},
-    {"usuario": "tecnico1", "senha": "123", "tipo": "tecnico"},
-    {"usuario": "tecnico2", "senha": "123", "tipo": "tecnico"},
+    {"usuario": "Pedro Martins", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Sergio Kohara", "senha": "Coordenador", "tipo": "admin"},
+    {"usuario": "Sergio Alves", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Alberto Ferraz", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Madson Reis", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Silvana Terrivel", "senha": "Analista", "tipo": "admin"},
 ]
 
 # --------------------------
@@ -45,7 +48,7 @@ def calcular_status(tarefa):
     """Atualiza status para atrasada se o prazo passar"""
     if tarefa["status"] == "Encerrada":
         return "Encerrada"
-    data_criacao = datetime.strptime(tarefa["data_criacao"], "%Y-%m-%d %H:%M:%S")
+    data_criacao = datetime.strptime(tarefa["data_criacao"], "%d-%m-%Y %H:%M:%S")
     if datetime.now() - data_criacao > timedelta(days=PRAZO_PADRAO_DIAS):
         return "Atrasada"
     return tarefa["status"]
@@ -58,7 +61,7 @@ if "usuario_logado" not in st.session_state:
 
 # Tela de login
 if not st.session_state.usuario_logado:
-    st.title("🔐 Login no Sistema de Tarefas")
+    st.title("🔐 Login no Sistema de Tarefas B2B SPI")
 
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
@@ -85,7 +88,7 @@ if st.sidebar.button("Sair"):
     st.session_state.usuario_logado = None
     st.rerun()
 
-st.title("📋 Sistema de Tarefas")
+st.title("📋 Sistema de Tarefas B2B SPI")
 
 # Carrega as tarefas persistentes
 tarefas = carregar_tarefas()
@@ -108,7 +111,7 @@ with st.form("form_tarefa"):
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
-                "data_criacao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "data_criacao": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                 "data_assumido": "",
                 "data_encerrado": ""
             }
@@ -146,7 +149,7 @@ else:
                 if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
                     if tarefa["status"] == "Pendente":
                         tarefa["status"] = "Em andamento"
-                        tarefa["data_assumido"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        tarefa["data_assumido"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                         salvar_tarefas(tarefas)
                         st.success("✅ Tarefa assumida com sucesso!")
                         st.rerun()
@@ -156,7 +159,7 @@ else:
                 if st.button("✅ Encerrar", key=f"encerrar_{i}"):
                     if tarefa["status"] != "Encerrada":
                         tarefa["status"] = "Encerrada"
-                        tarefa["data_encerrado"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        tarefa["data_encerrado"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                         salvar_tarefas(tarefas)
                         st.success("🏁 Tarefa encerrada com sucesso!")
                         st.rerun()
