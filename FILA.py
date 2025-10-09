@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from io import BytesIO
 
-st.set_page_config(page_title="Gestão de Tarefas", layout="centered")
+st.set_page_config(page_title="Gestão de Fila Config SPI", layout="centered")
 
 ARQUIVO_CSV = "tarefas.csv"
 
