@@ -157,8 +157,9 @@ else:
                     if tarefa["status"] == "Pendente":
                         tarefa["status"] = "Em andamento"
                         tarefa["data_assumido"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
+                        tarefa["assumido_por"] = usuario_atual
                         salvar_tarefas(tarefas)
-                        st.success("✅ Tarefa assumida com sucesso!")
+                        st.success(f"✅ Tarefa assumida por {usuario_atual}!")
                         st.rerun()
                     else:
                         st.warning("Esta tarefa já foi assumida ou encerrada.")
