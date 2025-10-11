@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import json
 import os
+import io
 
 st.set_page_config(page_title="Sistema de Tarefas B2B SPI", layout="wide")
 
@@ -168,6 +169,27 @@ else:
                         st.rerun()
                     else:
                         st.warning("Esta tarefa já está encerrada.")
+
+
+# --- Exportar tarefas ---
+if tarefas:
+    st.divider()
+    st.subheader("📤 Exportar tarefas criadas")
+
+    # Converte as tarefas para DataFrame
+    df_export = pd.DataFrame(tarefas)
+
+    # Cria arquivo Excel em memória
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df_export.to_excel(writer, index=False, sheet_name="Tarefas")
+
+    st.download_button(
+        label="📥 Baixar tarefas em Excel",
+        data=buffer.getvalue(),
+        file_name="tarefas_exportadas.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 # --------------------------
 # Botão do Admin
