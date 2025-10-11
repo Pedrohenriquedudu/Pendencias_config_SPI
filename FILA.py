@@ -176,20 +176,21 @@ else:
 
 if tarefas:
     st.divider()
-    st.subheader("📤 Exportar tarefas EXCEL ")
+    st.subheader("📤 Exportar tarefas (CSV)")
 
     df_export = pd.DataFrame(tarefas)
 
     buffer = io.StringIO()
-    df_export.to_excel(buffer, index=False, sep=",")
+    df_export.to_csv(buffer, index=False, sep=",")
     csv_bytes = buffer.getvalue().encode("utf-8")  # bytes para download
 
     st.download_button(
-        label="📥 Baixar tarefas em EXCEL",
+        label="📥 Baixar tarefas em CSV",
         data=csv_bytes,
-        file_name="tarefas_exportadas.xlxs",
-        mime="text/xlxs"
+        file_name="tarefas_exportadas.csv",
+        mime="text/csv"
     )
+
 
 # --------------------------
 # Botão do Admin
