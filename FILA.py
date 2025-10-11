@@ -155,12 +155,12 @@ else:
             with col1:
                 if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
                     if tarefa["status"] == "Pendente":
-                    tarefa["status"] = "Em andamento"
-                    tarefa["data_assumido"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
-                    tarefa["assumido_por"] = usuario_atual
-                    salvar_tarefas(tarefas)
-                    st.success(f"✅ Tarefa assumida por {usuario_atual}!")
-                    st.rerun()
+                        tarefa["status"] = "Em andamento"
+                        tarefa["data_assumido"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
+                        tarefa["assumido_por"] = usuario_atual
+                        salvar_tarefas(tarefas)
+                        st.success(f"✅ Tarefa assumida por {usuario_atual}!")
+                        st.rerun()
             else:
                 st.warning("Esta tarefa já foi assumida ou encerrada.")
             with col2:
