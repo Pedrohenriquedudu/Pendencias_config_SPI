@@ -118,8 +118,8 @@ with st.form("form_tarefa"):
                 "status": "Pendente",
                 "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "data_assumido": "",
-                "data_encerrado": ""
-                "assumido_por": ""
+                "data_encerrado": "",
+                "assumido_por": "",
                 "encerrado_por": ""
             }
             tarefas.append(nova_tarefa)
