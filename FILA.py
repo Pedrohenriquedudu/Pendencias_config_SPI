@@ -161,8 +161,8 @@ else:
                         salvar_tarefas(tarefas)
                         st.success(f"✅ Tarefa assumida por {usuario_atual}!")
                         st.rerun()
-            else:
-                st.warning("Esta tarefa já foi assumida ou encerrada.")
+                else:
+                    st.warning("Esta tarefa já foi assumida ou encerrada.")
             with col2:
                 if st.button("✅ Encerrar", key=f"encerrar_{i}"):
                     if tarefa["status"] != "Encerrada":
