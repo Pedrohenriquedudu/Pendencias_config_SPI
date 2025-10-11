@@ -1,205 +1,143 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, timedelta
-import json
-import os
 import io
-import numpy
+from datetime import datetime, timedelta
 
-st.set_page_config(page_title="Sistema de Tarefas B2B SPI", layout="wide")
+# --- Configuração inicial ---
+st.set_page_config(page_title="Gestão de Tarefas", layout="centered")
 
-# --------------------------
-# Configuração
-# --------------------------
-ARQUIVO_TAREFAS = "tarefas.json"
-PRAZO_PADRAO_DIAS = 3
+# --- Inicialização de dados persistentes ---
+if "tarefas" not in st.session_state:
+    st.session_state["tarefas"] = []
 
-USUARIOS = [
-    {"usuario": "Pedro Martins", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Sergio Kohara", "senha": "Coordenador", "tipo": "admin"},
-    {"usuario": "Sergio Alves", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Alberto Ferraz", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Madson Reis", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Silvana Terrivel", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Jessica Torres", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Gustavo Durão", "senha": "Analista", "tipo": "admin"},
-    {"usuario": "Marcio Barreira", "senha": "Analista", "tipo": "admin"},
-]
+if "usuario" not in st.session_state:
+    st.session_state["usuario"] = None
 
-# --------------------------
-# Funções auxiliares
-# --------------------------
+# --- Função para ajustar horário ---
+def agora_brasilia():
+    return (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
 
-def validar_login(usuario, senha):
-    """Verifica usuário e senha"""
-    for u in USUARIOS:
-        if u["usuario"] == usuario and u["senha"] == senha:
-            return u
-    return None
-
-def carregar_tarefas():
-    """Carrega tarefas do arquivo JSON"""
-    if os.path.exists(ARQUIVO_TAREFAS):
-        with open(ARQUIVO_TAREFAS, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
-
-def salvar_tarefas(tarefas):
-    """Salva tarefas no arquivo JSON"""
-    with open(ARQUIVO_TAREFAS, "w", encoding="utf-8") as f:
-        json.dump(tarefas, f, ensure_ascii=False, indent=2)
-
-def calcular_status(tarefa):
-    """Atualiza status para atrasada se o prazo passar"""
-    if tarefa["status"] == "Encerrada":
-        return "Encerrada"
-    data_criacao = datetime.strptime(tarefa["data_criacao"], "%d-%m-%Y %H:%M:%S")
-    if datetime.now() - data_criacao > timedelta(days=PRAZO_PADRAO_DIAS):
-        return "Atrasada"
-    return tarefa["status"]
-
-# --------------------------
-# Sessão de login
-# --------------------------
-if "usuario_logado" not in st.session_state:
-    st.session_state.usuario_logado = None
-
-# Tela de login
-if not st.session_state.usuario_logado:
-    st.title("🔐 Login no Sistema de Tarefas B2B SPI")
-
+# --- Função para login ---
+def login():
+    st.title("🔐 Login")
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
 
     if st.button("Entrar"):
-        user = validar_login(usuario, senha)
-        if user:
-            st.session_state.usuario_logado = user
-            st.success(f"✅ Bem-vindo, {usuario}!")
-            st.session_state.refresh = True
-            st.rerun()
+        if usuario == "admin" and senha == "123":
+            st.session_state["usuario"] = "admin"
+            st.success("Login de administrador realizado!")
+            st.experimental_rerun()
+        elif usuario:
+            st.session_state["usuario"] = usuario
+            st.success(f"Bem-vindo, {usuario}!")
+            st.experimental_rerun()
         else:
-            st.error("Usuário ou senha incorretos.")
-    st.stop()
+            st.error("Usuário ou senha incorretos!")
 
-# --------------------------
-# Área principal
-# --------------------------
-usuario_atual = st.session_state.usuario_logado["usuario"]
-tipo_usuario = st.session_state.usuario_logado["tipo"]
+# --- Tela principal ---
+def app():
+    st.title("📋 Sistema de Tarefas")
 
-st.sidebar.title(f"👋 {usuario_atual}")
-if st.sidebar.button("Sair"):
-    st.session_state.usuario_logado = None
-    st.rerun()
+    usuario = st.session_state["usuario"]
 
-st.title("📋 Sistema de Tarefas B2B SPI")
+    st.sidebar.write(f"👤 Usuário logado: **{usuario}**")
+    if st.sidebar.button("Sair"):
+        st.session_state["usuario"] = None
+        st.experimental_rerun()
 
-# Carrega as tarefas persistentes
-tarefas = carregar_tarefas()
+    # --- Adicionar nova tarefa ---
+    st.subheader("➕ Adicionar nova tarefa")
+    with st.form("form_tarefa"):
+        nome_tecnico = st.text_input("Nome do técnico")
+        telefone = st.text_input("Telefone do técnico")
+        descricao = st.text_area("Descrição da tarefa")
+        enviar = st.form_submit_button("Adicionar tarefa")
 
+        if enviar:
+            if nome_tecnico and telefone and descricao:
+                nova = {
+                    "técnico": nome_tecnico,
+                    "telefone": telefone,
+                    "descrição": descricao,
+                    "status": "Pendente",
+                    "criado_em": agora_brasilia(),
+                    "assumido_por": "",
+                    "assumido_em": "",
+                    "encerrado_por": "",
+                    "encerrado_em": ""
+                }
+                st.session_state["tarefas"].append(nova)
+                st.success("✅ Tarefa adicionada com sucesso!")
+            else:
+                st.warning("Por favor, preencha todos os campos.")
 
-# --------------------------
-# Adicionar nova tarefa
-# --------------------------
-st.subheader("➕ Adicionar Nova Tarefa")
-with st.form("form_tarefa"):
-    nome = st.text_input("Nome do técnico responsável")
-    telefone = st.text_input("Telefone do técnico")
-    descricao = st.text_area("Descrição da tarefa")
-    enviar = st.form_submit_button("Adicionar Tarefa")
+    # --- Listar tarefas ---
+    st.subheader("📋 Tarefas atuais")
+    tarefas = st.session_state["tarefas"]
 
-    if enviar:
-        if nome and telefone and descricao:
-            nova_tarefa = {
-                "nome": nome,
-                "telefone": telefone,
-                "descricao": descricao,
-                "status": "Pendente",
-                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
-                "data_assumido": "",
-                "data_encerrado": "",
-                "assumido_por": "",
-                "encerrado_por": ""
-            }
-            tarefas.append(nova_tarefa)
-            salvar_tarefas(tarefas)
-            st.success("✅ Tarefa adicionada com sucesso!")
-            st.rerun()
-        else:
-            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
+    if not tarefas:
+        st.info("Nenhuma tarefa cadastrada ainda.")
+    else:
+        for i, tarefa in enumerate(tarefas):
+            with st.expander(f"{tarefa['descrição']} — [{tarefa['status']}]"):
+                st.write(f"👷 Técnico: {tarefa['técnico']}")
+                st.write(f"📞 Telefone: {tarefa['telefone']}")
+                st.write(f"🕒 Criada em: {tarefa['criado_em']}")
+                if tarefa["assumido_por"]:
+                    st.write(f"👤 Assumida por: {tarefa['assumido_por']} em {tarefa['assumido_em']}")
+                if tarefa["encerrado_por"]:
+                    st.write(f"✅ Encerrada por: {tarefa['encerrado_por']} em {tarefa['encerrado_em']}")
 
-# --------------------------
-# Lista de tarefas
-# --------------------------
-st.subheader("📌 Tarefas Atuais")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Assumir", key=f"assumir_{i}"):
+                        if tarefa["status"] == "Pendente":
+                            tarefa["status"] = "Em andamento"
+                            tarefa["assumido_por"] = usuario
+                            tarefa["assumido_em"] = agora_brasilia()
+                            st.success("Tarefa assumida!")
+                            st.experimental_rerun()
+                        else:
+                            st.warning("Esta tarefa já foi assumida.")
+                with col2:
+                    if st.button("Encerrar", key=f"encerrar_{i}"):
+                        if tarefa["status"] != "Encerrada":
+                            tarefa["status"] = "Encerrada"
+                            tarefa["encerrado_por"] = usuario
+                            tarefa["encerrado_em"] = agora_brasilia()
+                            st.success("Tarefa encerrada!")
+                            st.experimental_rerun()
 
-if not tarefas:
-    st.info("Nenhuma tarefa cadastrada.")
+    # --- Somente admin pode apagar todas ---
+    if usuario == "admin" and tarefas:
+        st.divider()
+        if st.button("🗑️ Apagar todas as tarefas"):
+            st.session_state["tarefas"] = []
+            st.warning("Todas as tarefas foram apagadas.")
+            st.experimental_rerun()
+
+    # --- Exportar tarefas ---
+    if tarefas:
+        st.divider()
+        st.subheader("📤 Exportar tarefas em Excel (.xlsx)")
+
+        df_export = pd.DataFrame(tarefas)
+
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+            df_export.to_excel(writer, index=False, sheet_name="Tarefas")
+        buffer.seek(0)
+
+        st.download_button(
+            label="📥 Baixar arquivo Excel",
+            data=buffer,
+            file_name="tarefas_exportadas.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+# --- Execução principal ---
+if st.session_state["usuario"]:
+    app()
 else:
-    for i, tarefa in enumerate(tarefas):
-        cor_emoji = {
-            "Pendente": "🟡",
-            "Em andamento": "🔵",
-            "Encerrada": "🟢",
-            "Atrasada": "🔴"
-        }.get(tarefa["status"], "⚪")
-
-        with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
-            st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
-            st.write(f"📞 Telefone: {tarefa['telefone']}")
-            st.write(f"📅 Criada em: {tarefa['data_criacao']}")
-            st.write(f"📍 Status atual: **{tarefa['status']}**")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
-                    if tarefa["status"] == "Pendente":
-                        tarefa["status"] = "Em andamento"
-                        tarefa["data_assumido"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
-                        salvar_tarefas(tarefas)
-                        st.success("✅ Tarefa assumida com sucesso!")
-                        st.rerun()
-                    else:
-                        st.warning("Esta tarefa já foi assumida ou encerrada.")
-            with col2:
-                if st.button("✅ Encerrar", key=f"encerrar_{i}"):
-                    if tarefa["status"] != "Encerrada":
-                        tarefa["status"] = "Encerrada"
-                        tarefa["data_encerrado"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
-                        salvar_tarefas(tarefas)
-                        st.success("🏁 Tarefa encerrada com sucesso!")
-                        st.rerun()
-                    else:
-                        st.warning("Esta tarefa já está encerrada.")
-
-
-if tarefas:
-    st.divider()
-    st.subheader("📤 Exportar tarefas (CSV)")
-
-    df_export = pd.DataFrame(tarefas)
-
-    buffer = io.StringIO()
-    df_export.to_csv(buffer, index=False, sep=",")
-    csv_bytes = buffer.getvalue().encode("utf-8")  # bytes para download
-
-    st.download_button(
-        label="📥 Baixar tarefas em CSV",
-        data=csv_bytes,
-        file_name="tarefas_exportadas.csv",
-        mime="text/csv"
-    )
-
-
-# --------------------------
-# Botão do Admin
-# --------------------------
-if tipo_usuario == "admin":
-    st.divider()
-    if st.button("🗑️ Apagar todas as tarefas"):
-        tarefas = []
-        salvar_tarefas(tarefas)
-        st.warning("Todas as tarefas foram apagadas pelo Admin!")
-        st.rerun()
-
+    login()
