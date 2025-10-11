@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import json
 import os
 import io
+import openpyxl
 
 st.set_page_config(page_title="Sistema de Tarefas B2B SPI", layout="wide")
 
