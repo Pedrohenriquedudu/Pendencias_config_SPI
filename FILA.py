@@ -21,6 +21,7 @@ USUARIOS = [
     {"usuario": "Silvana Terrivel", "senha": "Analista", "tipo": "admin"},
     {"usuario": "Jessica Torres", "senha": "Analista", "tipo": "admin"},
     {"usuario": "Gustavo Durão", "senha": "Analista", "tipo": "admin"},
+    {"usuario": "Marcio Barreira", "senha": "Analista", "tipo": "admin"},
 ]
 
 # --------------------------
