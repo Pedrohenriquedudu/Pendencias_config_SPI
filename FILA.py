@@ -151,6 +151,12 @@ else:
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
             st.write(f"📍 Status atual: **{tarefa['status']}**")
 
+        if tarefa.get("assumido_por"):
+    		st.write(f"👷 Assumido por: **{tarefa['assumido_por']}** em {tarefa['data_assumido']}")
+		if tarefa.get("encerrado_por"):
+    		st.write(f"✅ Encerrado por: **{tarefa['encerrado_por']}** em {tarefa['data_encerrado']}")
+
+
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("🧑‍🔧 Assumir", key=f"assumir_{i}"):
@@ -161,15 +167,15 @@ else:
                         salvar_tarefas(tarefas)
                         st.success(f"✅ Tarefa assumida por {usuario_atual}!")
                         st.rerun()
-                else:
-                    st.warning("Esta tarefa já foi assumida ou encerrada.")
+                    else:
+                        st.warning("Esta tarefa já foi assumida ou encerrada.")
             with col2:
                 if st.button("✅ Encerrar", key=f"encerrar_{i}"):
                     if tarefa["status"] != "Encerrada":
                         tarefa["status"] = "Encerrada"
                         tarefa["data_encerrado"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
                         salvar_tarefas(tarefas)
-                        st.success("🏁 Tarefa encerrada com sucesso!")
+                        st.success("🏁 Tarefa encerrada com sucesso por {usuario_atual}!")
                         st.rerun()
                     else:
                         st.warning("Esta tarefa já está encerrada.")
