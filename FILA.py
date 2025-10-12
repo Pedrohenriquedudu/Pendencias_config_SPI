@@ -119,11 +119,11 @@ with st.form("form_tarefa"):
                 "descricao": descricao,
                 "status": "Pendente",
                 "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
+                "data_criacao": (usuario_atual)
                 "data_assumido": "",
                 "data_encerrado": "",
                 "assumido_por": "",
                 "encerrado_por": "",
-                "data_criacao_por": ""
             }
             tarefas.append(nova_tarefa)
             salvar_tarefas(tarefas)
