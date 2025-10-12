@@ -112,12 +112,14 @@ with st.form("form_tarefa"):
 
     if enviar:
         if id_tarefa and nome and telefone and descricao:
+            usuario_criador = st.session_state["usuario"]
             nova_tarefa = {
                 "id": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
+                "criado_por": usuario_criador,
                 "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "data_assumido": "",
                 "data_encerrado": "",
@@ -148,7 +150,7 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
-            st.write(f"🆔 ID: {tarefa['id']}")
+            st.write(f"🆔 ID: {tarefa['id']} | ✍️ Criado por: {tarefa['criado_por']} em {tarefa['criado_em']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
