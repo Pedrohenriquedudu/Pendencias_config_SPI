@@ -102,7 +102,7 @@ tarefas = carregar_tarefas()
 # --- Adicionar nova tarefa ---
 st.subheader("➕ Adicionar nova tarefa")
 with st.form("form_tarefa"):
-    id_tarefa = st.text_input("ID da tarefa (ex: 2007676)")
+    id_tarefa = st.text_input("ID Vantive")
     nome_tecnico = st.text_input("Nome do técnico")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
