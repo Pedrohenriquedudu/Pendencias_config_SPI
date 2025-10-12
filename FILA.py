@@ -122,7 +122,8 @@ with st.form("form_tarefa"):
                 "data_assumido": "",
                 "data_encerrado": "",
                 "assumido_por": "",
-                "encerrado_por": ""
+                "encerrado_por": "",
+                "data_criacao": ""
             }
             tarefas.append(nova_tarefa)
             salvar_tarefas(tarefas)
@@ -157,6 +158,8 @@ else:
                 st.write(f"👷 Assumido por: **{tarefa['assumido_por']}** em {tarefa['data_assumido']}")
             if tarefa.get("encerrado_por"):
                 st.write(f"✅ Encerrado por: **{tarefa['encerrado_por']}** em {tarefa['data_encerrado']}")
+            if tarefa.get("encerrado_por"):
+                st.write(f"👷 data_criacao por: **{tarefa['data_criacao_por']}** em {tarefa['data_criacao']}")
 
             col1, col2 = st.columns(2)
             with col1:
