@@ -111,7 +111,7 @@ with st.form("form_tarefa"):
     if enviar:
         if id_tarefa and nome_tecnico and telefone and descricao:
             nova_tarefa = {
-                "id": id_tarefa,
+                "id_tarefa": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
                 "descricao": descricao,
