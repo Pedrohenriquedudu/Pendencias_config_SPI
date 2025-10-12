@@ -123,7 +123,7 @@ with st.form("form_tarefa"):
                 "data_encerrado": "",
                 "assumido_por": "",
                 "encerrado_por": "",
-                "data_criacao": ""
+                "data_criacao_por": ""
             }
             tarefas.append(nova_tarefa)
             salvar_tarefas(tarefas)
