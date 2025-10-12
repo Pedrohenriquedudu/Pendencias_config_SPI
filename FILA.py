@@ -131,7 +131,7 @@ with st.form("form_tarefa"):
                 salvar_tarefas(tarefas)
                 st.session_state["tarefas"].append(nova)
                 st.success(f"✅ Tarefa adicionada com sucesso!")
-             else:
+            else:
                 st.warning("Por favor, preencha todos os campos.")
 
 # --------------------------
