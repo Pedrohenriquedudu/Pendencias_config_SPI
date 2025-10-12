@@ -112,7 +112,7 @@ with st.form("form_tarefa"):
 
 if enviar:
         if id_tarefa and nome and telefone and descricao:
-            usuario_criador = st.session_state["usuario"]
+            usuario_criador = st.session_state["usuario_atual"]
             nova = {
                 "id": id_tarefa,
                 "nome": nome,
