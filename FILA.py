@@ -112,15 +112,15 @@ with st.form("form_tarefa"):
 
 if enviar:
         if id_tarefa and nome and telefone and descricao:
-            usuario_criador = st.session_state["usuario_criador"]
+            usuario_criador = st.session_state["usuario"]
             nova = {
                 "id": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
                 "descrição": descricao,
                 "status": "Pendente",
-                "data_criacao_por": usuario_criador,
-                "data_criacao_em": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
+                "criado_por": "usuario_criador",
+                "criado_em": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "assumido_por": "",
                 "assumido_em": "",
                 "encerrado_por": "",
