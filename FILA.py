@@ -109,7 +109,7 @@ with st.form("form_tarefa"):
     enviar = st.form_submit_button("Adicionar tarefa")
 
     if enviar:
-        if nome and telefone and descricao:
+        if id_tarefa and nome_tecnico and telefone and descricao:
             nova_tarefa = {
                 "id_tarefa": id_tarefa,
                 "nome": nome,
