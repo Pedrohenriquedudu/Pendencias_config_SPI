@@ -144,11 +144,11 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):  
-             st.write(f"🆔 ID: {tarefa['id']}")
-             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
-             st.write(f"📞 Telefone: {tarefa['telefone']}")
-             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
-             st.write(f"📍 Status atual: **{tarefa['status']}**")
+              st.write(f"🆔 ID: {tarefa['id']}")
+              st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
+              st.write(f"📞 Telefone: {tarefa['telefone']}")
+              st.write(f"📅 Criada em: {tarefa['data_criacao']}")
+              st.write(f"📍 Status atual: **{tarefa['status']}**")
             if  tarefa.get("assumido_por"):
                 st.write(f"👷 Assumido por: **{tarefa['assumido_por']}** em {tarefa['data_assumido']}")
             if tarefa.get("encerrado_por"):
