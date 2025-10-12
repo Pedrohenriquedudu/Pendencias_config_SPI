@@ -99,19 +99,19 @@ st.title("📋 Sistema de Tarefas B2B SPI")
 tarefas = carregar_tarefas()
 
 
-# --- Adicionar nova tarefa ---
-st.subheader("➕ Adicionar nova tarefa")
+# --------------------------
+# Adicionar nova tarefa
+# --------------------------
+st.subheader("➕ Adicionar Nova Tarefa")
 with st.form("form_tarefa"):
-    id_tarefa = st.text_input("ID Vantive")
-    nome_tecnico = st.text_input("Nome do técnico")
+    nome = st.text_input("Nome do técnico responsável")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
-    enviar = st.form_submit_button("Adicionar tarefa")
+    enviar = st.form_submit_button("Adicionar Tarefa")
 
     if enviar:
-        if id_tarefa and nome_tecnico and telefone and descricao:
+        if nome and telefone and descricao:
             nova_tarefa = {
-                "id_tarefa": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
                 "descricao": descricao,
@@ -124,11 +124,10 @@ with st.form("form_tarefa"):
             }
             tarefas.append(nova_tarefa)
             salvar_tarefas(tarefas)
-            st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa adicionada com sucesso!")
+            st.success("✅ Tarefa adicionada com sucesso!")
+            st.rerun()
         else:
-            st.warning("Por favor, preencha todos os campos.")
-
+            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
 
 # --------------------------
 # Lista de tarefas
@@ -147,7 +146,6 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
-            st.write(f"🆔 ID: {tarefa['id']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
@@ -184,7 +182,7 @@ else:
 
 if tarefas:
     st.divider()
-    st.subheader("📤 Exportar tarefas Excel")
+    st.subheader("📤 Exportar tarefas (CSV)")
 
     df_export = pd.DataFrame(tarefas)
 
@@ -193,7 +191,7 @@ if tarefas:
     csv_bytes = buffer.getvalue().encode("utf-8")  # bytes para download
 
     st.download_button(
-        label="📥 Baixar tarefas em Excel",
+        label="📥 Baixar tarefas em CSV",
         data=csv_bytes,
         file_name="tarefas_exportadas.csv",
         mime="text/csv"
