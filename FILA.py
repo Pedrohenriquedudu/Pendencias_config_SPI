@@ -168,6 +168,7 @@ else:
                     if tarefa["status"] != "Encerrada":
                         tarefa["status"] = "Encerrada"
                         tarefa["data_encerrado"] = (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S")
+                        tarefa["encerrado_por"] = usuario_atual
                         salvar_tarefas(tarefas)
                         st.success("🏁 Tarefa encerrada com sucesso por {usuario_atual}!")
                         st.rerun()
