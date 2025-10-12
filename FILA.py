@@ -151,9 +151,9 @@ else:
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
             st.write(f"📍 Status atual: **{tarefa['status']}**")
 
-        if tarefa.get("assumido_por"):
+         if tarefa.get("assumido_por"):
     		st.write(f"👷 Assumido por: **{tarefa['assumido_por']}** em {tarefa['data_assumido']}")
-		if tarefa.get("encerrado_por"):
+		 if tarefa.get("encerrado_por"):
     		st.write(f"✅ Encerrado por: **{tarefa['encerrado_por']}** em {tarefa['data_encerrado']}")
 
 
