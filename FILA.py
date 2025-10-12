@@ -111,6 +111,7 @@ with st.form("form_tarefa"):
     enviar = st.form_submit_button("Adicionar Tarefa")
 
     if enviar:
+        if enviar:
         if id_tarefa and nome and telefone and descricao:
             usuario_criador = st.session_state["usuario"]
             nova_tarefa = {
