@@ -185,7 +185,7 @@ else:
 
 if tarefas:
     st.divider()
-    st.subheader("📤 Exportar tarefas (CSV)")
+    st.subheader("📤 Exportar tarefas Excel")
 
     df_export = pd.DataFrame(tarefas)
 
@@ -194,7 +194,7 @@ if tarefas:
     csv_bytes = buffer.getvalue().encode("utf-8")  # bytes para download
 
     st.download_button(
-        label="📥 Baixar tarefas em CSV",
+        label="📥 Baixar tarefas em Excel",
         data=csv_bytes,
         file_name="tarefas_exportadas.csv",
         mime="text/csv"
