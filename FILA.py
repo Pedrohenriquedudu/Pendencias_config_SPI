@@ -157,8 +157,6 @@ else:
                 st.write(f"👷 Assumido por: **{tarefa['assumido_por']}** em {tarefa['data_assumido']}")
             if tarefa.get("encerrado_por"):
                 st.write(f"✅ Encerrado por: **{tarefa['encerrado_por']}** em {tarefa['data_encerrado']}")
-            if tarefa.get("data_criacao_por"):
-                st.write(f"👷 data_criacao por: **{tarefa['data_criacao_por']}** em {tarefa['data_criacao']}")
 
             col1, col2 = st.columns(2)
             with col1:
