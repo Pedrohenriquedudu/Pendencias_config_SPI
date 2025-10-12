@@ -126,7 +126,7 @@ if enviar:
                 "encerrado_em": ""
             }
             st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso por {usuario_criador}!")
+            st.success(f"✅ Tarefa adicionada com sucesso !")
         else:
             st.warning("Por favor, preencha todos os campos.")
 
