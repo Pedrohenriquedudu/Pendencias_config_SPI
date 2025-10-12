@@ -124,10 +124,11 @@ with st.form("form_tarefa"):
             }
             tarefas.append(nova_tarefa)
             salvar_tarefas(tarefas)
-            st.success("✅ Tarefa adicionada com sucesso!")
-            st.rerun()
+            st.session_state["tarefas"].append(nova)
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
         else:
-            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
+            st.warning("Por favor, preencha todos os campos.")
+
 
 # --------------------------
 # Lista de tarefas
@@ -146,11 +147,11 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
+            st.write(f"🆔 ID: {tarefa['ID']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
             st.write(f"📍 Status atual: **{tarefa['status']}**")
-            st.write(f"🆔 ID: {tarefa['ID']}")
             if  tarefa.get("assumido_por"):
                 st.write(f"👷 Assumido por: **{tarefa['assumido_por']}** em {tarefa['data_assumido']}")
             if tarefa.get("encerrado_por"):
