@@ -99,19 +99,19 @@ st.title("📋 Sistema de Tarefas B2B SPI")
 tarefas = carregar_tarefas()
 
 
-# --------------------------
-# Adicionar nova tarefa
-# --------------------------
-st.subheader("➕ Adicionar Nova Tarefa")
+# --- Adicionar nova tarefa ---
+st.subheader("➕ Adicionar nova tarefa")
 with st.form("form_tarefa"):
-    nome = st.text_input("Nome do técnico responsável")
+    id_tarefa = st.text_input("ID da tarefa (ex: 2007676)")
+    nome_tecnico = st.text_input("Nome do técnico")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
-    enviar = st.form_submit_button("Adicionar Tarefa")
+    enviar = st.form_submit_button("Adicionar tarefa")
 
     if enviar:
         if nome and telefone and descricao:
             nova_tarefa = {
+                "id_tarefa": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
                 "descricao": descricao,
@@ -146,6 +146,7 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
+            st.write(f"🆔 ID: {tarefa['id']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
