@@ -110,29 +110,26 @@ with st.form("form_tarefa"):
     descricao = st.text_area("Descrição da tarefa")
     enviar = st.form_submit_button("Adicionar Tarefa")
 
-    if enviar:
-            
-            if id_tarefa and nome and telefone and descricao:
-                usuario_criador = st.session_state["usuario"]
-                nova_tarefa = {
+if enviar:
+        if id_tarefa and nome_tecnico and telefone and descricao:
+            usuario_criador = st.session_state["usuario"]
+            nova = {
                 "id": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
-                "descricao": descricao,
+                "descrição": descricao,
                 "status": "Pendente",
                 "criado_por": usuario_criador,
-                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
-                "data_assumido": "",
-                "data_encerrado": "",
+                "criado_em": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "assumido_por": "",
+                "assumido_em": "",
                 "encerrado_por": "",
-                }
-                tarefas.append(nova_tarefa)
-                salvar_tarefas(tarefas)
-                st.session_state["tarefas"].append(nova)
-                st.success(f"✅ Tarefa adicionada com sucesso!")
-            else:
-                st.warning("Por favor, preencha todos os campos.")
+                "encerrado_em": ""
+            }
+            st.session_state["tarefas"].append(nova)
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso por {usuario_criador}!")
+        else:
+            st.warning("Por favor, preencha todos os campos.")
 
 # --------------------------
 # Lista de tarefas
