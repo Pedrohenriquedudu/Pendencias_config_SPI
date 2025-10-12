@@ -99,35 +99,33 @@ st.title("📋 Sistema de Tarefas B2B SPI")
 tarefas = carregar_tarefas()
 
 
-# --------------------------
-# Adicionar nova tarefa
-# --------------------------
-st.subheader("➕ Adicionar Nova Tarefa")
+# --- Adicionar nova tarefa ---
+st.subheader("➕ Adicionar nova tarefa")
 with st.form("form_tarefa"):
-    nome = st.text_input("Nome do técnico responsável")
+    id_tarefa = st.text_input("ID da tarefa (ex: T001)")
+    nome_tecnico = st.text_input("Nome do técnico")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
-    enviar = st.form_submit_button("Adicionar Tarefa")
+    enviar = st.form_submit_button("Adicionar tarefa")
 
     if enviar:
-        if nome and telefone and descricao:
-            nova_tarefa = {
-                "nome": nome,
+        if id_tarefa and nome_tecnico and telefone and descricao:
+            nova = {
+                "id": id_tarefa,
+                "técnico": nome_tecnico,
                 "telefone": telefone,
-                "descricao": descricao,
+                "descrição": descricao,
                 "status": "Pendente",
-                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
-                "data_assumido": "",
-                "data_encerrado": "",
+                "criado_em": agora_brasilia(),
                 "assumido_por": "",
-                "encerrado_por": ""
+                "assumido_em": "",
+                "encerrado_por": "",
+                "encerrado_em": ""
             }
-            tarefas.append(nova_tarefa)
-            salvar_tarefas(tarefas)
-            st.success("✅ Tarefa adicionada com sucesso!")
-            st.rerun()
+            st.session_state["tarefas"].append(nova)
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
         else:
-            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
+            st.warning("Por favor, preencha todos os campos.")
 
 # --------------------------
 # Lista de tarefas
@@ -146,6 +144,7 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
+            st.write(f"🆔 ID: {tarefa['id']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
