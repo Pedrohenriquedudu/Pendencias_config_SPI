@@ -104,32 +104,30 @@ tarefas = carregar_tarefas()
 # --------------------------
 st.subheader("➕ Adicionar Nova Tarefa")
 with st.form("form_tarefa"):
-    with st.form("form_tarefa"):
-    id_tarefa = st.text_input("ID da tarefa")
-    nome = st.text_input("Nome do técnico")
+    nome = st.text_input("Nome do técnico responsável")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
-    enviar = st.form_submit_button("Adicionar tarefa")
+    enviar = st.form_submit_button("Adicionar Tarefa")
 
     if enviar:
-        if id_tarefa and nome and telefone and descricao:
-            nova = {
-                "id": id_tarefa,
+        if nome and telefone and descricao:
+            nova_tarefa = {
                 "nome": nome,
                 "telefone": telefone,
-                "descrição": descricao,
+                "descricao": descricao,
                 "status": "Pendente",
-                "criado_em": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
+                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
+                "data_assumido": "",
+                "data_encerrado": "",
                 "assumido_por": "",
-                "assumido_em": "",
-                "encerrado_por": "",
-                "encerrado_em": ""
+                "encerrado_por": ""
             }
-            st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa adicionada com sucesso!")
+            tarefas.append(nova_tarefa)
+            salvar_tarefas(tarefas)
+            st.success("✅ Tarefa adicionada com sucesso!")
+            st.rerun()
         else:
-            st.warning("Por favor, preencha todos os campos.")
-
+            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
 
 # --------------------------
 # Lista de tarefas
@@ -148,7 +146,6 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
-            st.write(f"🆔 ID: {tarefa['id']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
