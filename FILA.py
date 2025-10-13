@@ -124,8 +124,6 @@ with st.form("form_tarefa"):
                 "assumido_por": "",
                 "encerrado_por": ""
             }
-            tarefas.append(nova_tarefa)
-            salvar_tarefas(tarefas)
             st.session_state["tarefas"].append(nova)
             st.success(f"✅ Tarefa adicionada com sucesso!")
         else:
