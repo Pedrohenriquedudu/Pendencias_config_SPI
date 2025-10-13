@@ -123,7 +123,7 @@ if enviar:
                 "assumido_em": "",
                 "encerrado_por": "",
                 "encerrado_em": ""
-        }
+            }
             st.session_state["tarefas"].append(nova)
             st.success(f"✅ Tarefa adicionada com sucesso!")
         else:
