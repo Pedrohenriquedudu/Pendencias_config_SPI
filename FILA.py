@@ -118,7 +118,7 @@ with st.form("form_tarefa"):
                 "telefone": telefone,
                 "descrição": descricao,
                 "status": "Pendente",
-                "criado_em": agora_brasilia(),
+                "criado_em": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "assumido_por": "",
                 "assumido_em": "",
                 "encerrado_por": "",
