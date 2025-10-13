@@ -125,7 +125,7 @@ with st.form("form_tarefa"):
                 "encerrado_em": ""
             }
             st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
+            st.success(f"✅ Tarefa adicionada com sucesso!")
         else:
             st.warning("Por favor, preencha todos os campos.")
 
