@@ -116,19 +116,18 @@ with st.form("form_tarefa"):
                 "id": id_tarefa,
                 "nome": nome,
                 "telefone": telefone,
-                "descricao": descricao,
+                "descrição": descricao,
                 "status": "Pendente",
-                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
-                "data_assumido": "",
-                "data_encerrado": "",
+                "criado_em": agora_brasilia(),
                 "assumido_por": "",
-                "encerrado_por": ""
+                "assumido_em": "",
+                "encerrado_por": "",
+                "encerrado_em": ""
             }
             st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa adicionada com sucesso!")
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
         else:
             st.warning("Por favor, preencha todos os campos.")
-
 
 
 # --------------------------
