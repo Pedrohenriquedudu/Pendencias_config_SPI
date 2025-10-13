@@ -124,8 +124,6 @@ if enviar:
                 "encerrado_por": "",
                 "encerrado_em": ""
             }
-            tarefas.append(nova_tarefa)
-            salvar_tarefas(tarefas)
             st.success("✅ Tarefa adicionada com sucesso!")
             st.rerun()
         else:
