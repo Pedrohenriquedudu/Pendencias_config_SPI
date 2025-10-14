@@ -102,33 +102,34 @@ tarefas = carregar_tarefas()
 # --------------------------
 # Adicionar nova tarefa
 # --------------------------
-st.subheader("➕ Adicionar Nova Tarefa")
+st.subheader("➕ Adicionar nova tarefa")
 with st.form("form_tarefa"):
-    id_tarefa = st.text_input("ID Vantive")
-    nome = st.text_input("Nome do técnico responsável")
+    id_tarefa = st.text_input("ID da tarefa (ex: T001)")
+    nome_tecnico = st.text_input("Nome do técnico")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
-    enviar = st.form_submit_button("Adicionar Tarefa")
+    enviar = st.form_submit_button("Adicionar tarefa")
 
     if enviar:
-        if nome and telefone and descricao:
-            nova_tarefa = {
+        if id_tarefa and nome_tecnico and telefone and descricao:
+            usuario_criador = st.session_state["usuario"]
+            nova = {
                 "id": id_tarefa,
-                "nome": nome,
+                "técnico": nome_tecnico,
                 "telefone": telefone,
-                "descricao": descricao,
+                "descrição": descricao,
                 "status": "Pendente",
-                "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
-                "data_assumido": "",
-                "data_encerrado": "",
+                "criado_por": usuario_criador,
+                "criado_em": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "assumido_por": "",
-                "encerrado_por": ""
+                "assumido_em": "",
+                "encerrado_por": "",
+                "encerrado_em": ""
             }
             st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso por {usuario_criador}!")
         else:
             st.warning("Por favor, preencha todos os campos.")
-
 
 
 # --------------------------
@@ -148,7 +149,7 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
-            st.write(f"🆔 ID: {tarefa['ID']}")
+            st.write(f"🆔 ID: {tarefa['id']} | ✍️ Criado por: {tarefa['criado_por']} em {tarefa['criado_em']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
