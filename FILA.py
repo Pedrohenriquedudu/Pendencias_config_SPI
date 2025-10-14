@@ -111,10 +111,10 @@ with st.form("form_tarefa"):
     enviar = st.form_submit_button("Adicionar tarefa")
 
     if enviar:
-        if id_tarefa and nome_tecnico and telefone and descricao:
+        if id_tarefa and nome and telefone and descricao:
             nova = {
                 "id": id_tarefa,
-                "técnico": nome_tecnico,
+                "nome": nome,
                 "telefone": telefone,
                 "descrição": descricao,
                 "status": "Pendente",
@@ -147,7 +147,7 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
-            st.write(f"🆔 ID: {tarefa['id']}")
+            st.write(f"🆔 ID: {tarefa['ID']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
