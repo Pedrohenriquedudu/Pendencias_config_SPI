@@ -124,12 +124,11 @@ with st.form("form_tarefa"):
                 "assumido_por": "",
                 "encerrado_por": ""
             }
-            tarefas.append(nova_tarefa)
-            salvar_tarefas(tarefas)
-            st.success("✅ Tarefa adicionada com sucesso!")
-            st.rerun()
+            st.session_state["tarefas"].append(nova)
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
         else:
-            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
+            st.warning("Por favor, preencha todos os campos.")
+
 
 
 # --------------------------
