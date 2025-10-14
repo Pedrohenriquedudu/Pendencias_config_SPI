@@ -104,7 +104,7 @@ tarefas = carregar_tarefas()
 # --------------------------
 st.subheader("➕ Adicionar nova tarefa")
 with st.form("form_tarefa"):
-    id_tarefa = st.text_input("ID Vantive")
+    id_tarefa = st.text_input("ID da tarefa (ex: T001)")
     nome_tecnico = st.text_input("Nome do técnico")
     telefone = st.text_input("Telefone do técnico")
     descricao = st.text_area("Descrição da tarefa")
@@ -114,9 +114,9 @@ with st.form("form_tarefa"):
         if id_tarefa and nome_tecnico and telefone and descricao:
             nova = {
                 "id": id_tarefa,
-                "nome_tecnico ": nome_tecnico,
+                "técnico": nome_tecnico,
                 "telefone": telefone,
-                "descricao": descricao,
+                "descrição": descricao,
                 "status": "Pendente",
                 "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "data_assumido": "",
@@ -125,9 +125,10 @@ with st.form("form_tarefa"):
                 "encerrado_por": ""
             }
             st.session_state["tarefas"].append(nova)
-            st.success(f"✅ Tarefa adicionada com sucesso!")
+            st.success(f"✅ Tarefa {id_tarefa} adicionada com sucesso!")
         else:
-            st.warning("⚠️ Preencha todos os campos antes de adicionar.")
+            st.warning("Por favor, preencha todos os campos.")
+
 
 # --------------------------
 # Lista de tarefas
