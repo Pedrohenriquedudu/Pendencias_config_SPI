@@ -124,7 +124,6 @@ with st.form("form_tarefa"):
                 "assumido_por": "",
                 "encerrado_por": ""
             }
-            salvar_tarefas(tarefas)
             st.session_state["tarefas"].append(nova)
             st.success(f"✅ Tarefa adicionada com sucesso!")
         else:
@@ -147,6 +146,7 @@ else:
         }.get(tarefa["status"], "⚪")
 
         with st.expander(f"{cor_emoji} {tarefa['descricao']}"):
+            st.write(f"🆔 ID: {tarefa['id']}")
             st.write(f"👨‍🔧 Técnico: {tarefa['nome']}")
             st.write(f"📞 Telefone: {tarefa['telefone']}")
             st.write(f"📅 Criada em: {tarefa['data_criacao']}")
