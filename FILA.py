@@ -114,7 +114,7 @@ with st.form("form_tarefa"):
         if id_tarefa and nome_tecnico and telefone and descricao:
             nova = {
                 "id": id_tarefa,
-                "nome": nome,
+                "nome_tecnico ": nome_tecnico,
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
