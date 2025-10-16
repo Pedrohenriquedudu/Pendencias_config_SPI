@@ -112,14 +112,12 @@ with st.form("form_tarefa"):
 
     if enviar:
         if id and nome and telefone and descricao:
-            usuario_criador = st.session_state["usuario"]
             nova_tarefa = {
                 "id": id,
                 "nome": nome,
                 "telefone": telefone,
                 "descricao": descricao,
                 "status": "Pendente",
-                "criado_por": usuario_criador,
                 "data_criacao": (datetime.now() - timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S"),
                 "data_assumido": "",
                 "data_encerrado": "",
